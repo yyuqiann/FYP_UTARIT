@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="12dp">
+
+    <!-- Search Bar -->
+    <EditText
+        android:id="@+id/searchChats"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Search chats..."
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:drawablePadding="8dp"
+        android:padding="8dp"
+        android:fontFamily="@font/asul"
+        android:textColor="@color/black"
+        android:textColorHint="@android:color/darker_gray"
+        android:background="@android:drawable/edit_text"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Chats Scroll -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Chat Item 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@color/light_brown"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/chatUsername1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="About"
+                    android:fontFamily="@font/asul"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+
+                <TextView
+                    android:id="@+id/chatLastMessage1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="See you at the event later!"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/asul"
+                    android:textColor="@color/dark_gray"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+            <!-- Chat Item 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/beige_item_bg"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/chatUsername2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="John"
+                    android:fontFamily="@font/asul"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+
+                <TextView
+                    android:id="@+id/chatLastMessage2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Assignment discussion ongoing..."
+                    android:textSize="14sp"
+                    android:fontFamily="@font/asul"
+                    android:textColor="@color/dark_gray"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+            <!-- Chat Item 3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:background="@drawable/beige_item_bg"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/chatUsername3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xin"
+                    android:fontFamily="@font/asul"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+
+                <TextView
+                    android:id="@+id/chatLastMessage3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reminder: Cybersecurity Workshop at 3 PM"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/asul"
+                    android:textColor="@color/dark_gray"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

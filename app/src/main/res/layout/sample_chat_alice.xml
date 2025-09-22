@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <!-- Chat Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Alice Message -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_bubble_alice"
+                android:padding="10dp"
+                android:layout_marginBottom="8dp"
+                android:layout_gravity="start">
+
+                <TextView
+                    android:id="@+id/msgAlice1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hi! Are you coming to the workshop?"
+                    android:textSize="15sp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/asul" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10:30 AM"
+                    android:textSize="11sp"
+                    android:textColor="@color/dark_gray"
+                    android:layout_marginTop="4dp"
+                    android:layout_gravity="end" />
+            </LinearLayout>
+
+            <!-- My Reply -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_bubble_me"
+                android:padding="10dp"
+                android:layout_marginBottom="8dp"
+                android:layout_gravity="end">
+
+                <TextView
+                    android:id="@+id/msgMe1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Yes! I’ll be there."
+                    android:textSize="15sp"
+                    android:textColor="@android:color/white"
+                    android:fontFamily="@font/asul" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10:32 AM"
+                    android:textSize="11sp"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="4dp"
+                    android:layout_gravity="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_bubble_alice"
+                android:padding="10dp"
+                android:layout_marginBottom="8dp"
+                android:layout_gravity="start">
+
+                <TextView
+                    android:id="@+id/msgAlice2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="See you at the event later!"
+                    android:textSize="15sp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/asul" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10:35 AM"
+                    android:textSize="11sp"
+                    android:textColor="@color/dark_gray"
+                    android:layout_marginTop="4dp"
+                    android:layout_gravity="end" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Message Input Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="@color/beige">
+
+        <EditText
+            android:id="@+id/inputMessage"
+            android:layout_width="342dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:drawable/edit_text"
+            android:fontFamily="@font/asul"
+            android:hint="Type a message..."
+            android:padding="10dp"
+            android:textColor="@color/black"
+            android:textColorHint="@android:color/darker_gray" />
+
+        <ImageView
+            android:id="@+id/btnSend"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_send"
+            android:contentDescription="Send"
+            android:padding="8dp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+</LinearLayout>

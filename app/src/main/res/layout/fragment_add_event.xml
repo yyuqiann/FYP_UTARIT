@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:elevation="3dp"
+        android:background="@color/beige"
+        android:padding="16dp">
+
+        <!-- Event Title Input -->
+        <EditText
+            android:id="@+id/inputEventTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Event Title"
+            android:textColor="@color/marigold"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/asul"
+            android:inputType="textCapSentences"
+            android:padding="10dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- Event Date & Time Input -->
+        <EditText
+            android:id="@+id/inputEventDateTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Date & Time (e.g. 2025-10-20 15:00)"
+            android:textColor="@color/black"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="16sp"
+            android:fontFamily="@font/asul"
+            android:inputType="datetime"
+            android:layout_marginTop="12dp"
+            android:padding="10dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- Event Location Input -->
+        <EditText
+            android:id="@+id/inputEventLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Location"
+            android:textColor="@color/black"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="16sp"
+            android:fontFamily="@font/asul"
+            android:inputType="textCapWords"
+            android:layout_marginTop="12dp"
+            android:padding="10dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- Submit Button -->
+        <Button
+            android:id="@+id/btnSubmitEvent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Event"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/asul"
+            android:backgroundTint="@color/marigold"
+            android:layout_marginTop="20dp"
+            android:padding="12dp" />
+
+    </LinearLayout>
+</ScrollView>

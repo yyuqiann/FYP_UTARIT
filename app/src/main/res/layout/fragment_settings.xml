@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/white"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/editUsername"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:hint="Username"
+        android:fontFamily="@font/asul"
+        android:textSize="20sp"
+        android:background="@drawable/rounded_rectangle2"
+        android:padding="12dp"/>
+
+    <Button
+        android:id="@+id/btnUpdateUsername"
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:text="Update Username"
+        android:fontFamily="@font/asul"
+        android:layout_marginTop="20dp"
+        android:background="@color/marigold"
+        android:textColor="@color/white"/>
+</LinearLayout>

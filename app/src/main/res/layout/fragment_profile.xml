@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="24dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/tvUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Yu Qian"
+        android:textSize="24sp"
+        android:textColor="@color/marigold"
+        android:fontFamily="@font/asul"
+        android:textStyle="bold"
+        android:layout_marginTop="40dp"/>
+
+    <TextView
+        android:id="@+id/tvEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="yuqian@gmail.com"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/asul"
+        android:layout_marginTop="12dp"/>
+
+    <Button
+        android:id="@+id/btnSettings"
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:text="Settings"
+        android:fontFamily="@font/asul"
+        android:layout_marginTop="30dp"
+        android:background="@color/marigold"
+        android:textColor="@color/white"/>
+
+    <Button
+        android:id="@+id/btnAbout"
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:text="About"
+        android:fontFamily="@font/asul"
+        android:layout_marginTop="20dp"
+        android:background="@color/marigold"
+        android:textColor="@color/white"/>
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:text="Logout"
+        android:fontFamily="@font/asul"
+        android:layout_marginTop="20dp"
+        android:background="@color/marigold"
+        android:textColor="@color/white"/>
+</LinearLayout>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <!-- Success Icon -->
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/success"
+        android:contentDescription="Success Icon"
+        android:tint="@color/marigold"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Success Message -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logout Successful"
+        android:textSize="22sp"
+        android:fontFamily="@font/asul"
+        android:textStyle="bold"
+        android:textColor="@color/marigold"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Sub Message -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You have been logged out of UTARIT App."
+        android:textSize="16sp"
+        android:fontFamily="@font/asul"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:layout_marginBottom="32dp"/>
+
+    <!-- Back to Login Button -->
+    <Button
+        android:id="@+id/btnBackToLogin"
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:text="Back to Login"
+        android:fontFamily="@font/asul"
+        android:background="@color/marigold"
+        android:textColor="@color/white"/>
+</LinearLayout>
