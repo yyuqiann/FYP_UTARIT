@@ -19,7 +19,6 @@ import java.util.List;
 
 import my.edu.utar.utarit.adapter.UserAdapter;
 import my.edu.utar.utarit.api.SupabaseApi;
-import my.edu.utar.utarit.model.User;
 import my.edu.utar.utarit.model.Profile;
 import my.edu.utar.utarit.network.SupabaseClient;
 import retrofit2.Call;
@@ -57,14 +56,19 @@ public class UserSearchFragment extends Fragment {
                     .commit();
         });
 
-
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                searchUsers(s.toString().trim());
+                String query = s.toString().trim();
+                if (!query.isEmpty()) {
+                    searchUsers(query);
+                } else {
+                    userList.clear();
+                    adapter.notifyDataSetChanged();
+                }
             }
             @Override public void afterTextChanged(Editable s) {}
         });
@@ -73,28 +77,26 @@ public class UserSearchFragment extends Fragment {
     }
 
     private void searchUsers(String username) {
-        if (username.isEmpty()) {
-            userList.clear();
-            adapter.notifyDataSetChanged();
-            return;
-        }
+        api.searchUsersByUsername(
+                SupabaseClient.API_KEY,
+                "Bearer " + SupabaseClient.API_KEY,
+                "ilike.*" + username + "*" // <-- Supabase filter
+        ).enqueue(new Callback<List<Profile>>() {
+            @Override
+            public void onResponse(Call<List<Profile>> call, Response<List<Profile>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    userList.clear();
+                    userList.addAll(response.body());
+                    adapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(getContext(), "No users found", Toast.LENGTH_SHORT).show();
+                }
+            }
 
-        // Correct API method
-        api.searchUsersByUsername(SupabaseClient.API_KEY, username)
-                .enqueue(new Callback<List<Profile>>() {
-                    @Override
-                    public void onResponse(Call<List<Profile>> call, Response<List<Profile>> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            userList.clear();
-                            userList.addAll(response.body());
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<Profile>> call, Throwable t) {
-                        Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onFailure(Call<List<Profile>> call, Throwable t) {
+                Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

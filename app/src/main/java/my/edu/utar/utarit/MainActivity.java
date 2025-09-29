@@ -1,59 +1,57 @@
 package my.edu.utar.utarit;
 
-import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import my.edu.utar.utarit.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
-    private FloatingActionButton fab;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
+        // Initialize Bottom Navigation View
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        fab = findViewById(R.id.fab);
 
-        // 默认 fragment：HomeFragment
+        // Show HomeFragment by default when the activity is first created
         if (savedInstanceState == null) {
-            replaceFragment(new HomeFragment());
-            bottomNavigationView.setSelectedItemId(R.id.home);
+            Fragment homeFragment = new HomeFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frame_layout, homeFragment, "HOME_FRAGMENT")
+                    .commit();
+            bottomNavigationView.setSelectedItemId(R.id.home);  // Set default selection
         }
 
-        // Bottom navigation listener
+        // Bottom Navigation Listener for switching between fragments
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.home) {
-                replaceFragment(new HomeFragment());
-            } else if (id == R.id.event) {
-                replaceFragment(new EventFragment());
-            } else if (id == R.id.add) {
-                replaceFragment(new AddPostFragment());
-            } else if (id == R.id.chat) {
-                replaceFragment(new ChatFragment());
-            } else if (id == R.id.profile) {
-                replaceFragment(new ProfileFragment());
+            Fragment selectedFragment = null;
+
+            // Determine which fragment to load based on the selected item
+            if (item.getItemId() == R.id.home) selectedFragment = new HomeFragment();
+            //else if (item.getItemId() == R.id.event) selectedFragment = new EventFragment();
+            else if (item.getItemId() == R.id.add) selectedFragment = new AddPostFragment();
+            //else if (item.getItemId() == R.id.chat) selectedFragment = new ChatFragment();
+            else if (item.getItemId() == R.id.profile) selectedFragment = new ProfileFragment();
+
+            // Replace the current fragment with the selected one
+            if (selectedFragment != null) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frame_layout, selectedFragment)
+                        .commit();
             }
             return true;
         });
-
-        // FAB click → AddPostFragment
-        fab.setOnClickListener(view -> replaceFragment(new AddPostFragment()));
     }
 
-    private void replaceFragment(Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frame_layout, fragment)
-                .commit();
-    }
 }

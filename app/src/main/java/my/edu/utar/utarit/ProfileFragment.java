@@ -29,30 +29,26 @@ public class ProfileFragment extends Fragment {
 
         tvUsername = view.findViewById(R.id.tvUsername);
         tvEmail = view.findViewById(R.id.tvEmail);
-        btnSettings = view.findViewById(R.id.btnSettings);
-        btnAbout = view.findViewById(R.id.btnAbout);
+       //btnSettings = view.findViewById(R.id.btnSettings);
+         btnAbout = view.findViewById(R.id.btnAbout);
         btnLogout = view.findViewById(R.id.btnLogout);
 
-        // Load current user info from SessionManager
         SessionManager session = SessionManager.getInstance(requireContext());
         tvUsername.setText(session.getUsername());
         tvEmail.setText(session.getEmail());
 
-        // Open SettingsFragment
-        btnSettings.setOnClickListener(v -> requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frame_layout, new SettingsFragment())
-                .addToBackStack(null)
-                .commit());
+        //btnSettings.setOnClickListener(v -> requireActivity().getSupportFragmentManager()
+                //.beginTransaction()
+                //.replace(R.id.frame_layout, new SettingsFragment())
+                //.addToBackStack(null)
+                //.commit())
 
-        // Open AboutFragment
         btnAbout.setOnClickListener(v -> requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.frame_layout, new AboutFragment())
                 .addToBackStack(null)
                 .commit());
 
-        // Logout
         btnLogout.setOnClickListener(v -> {
             session.clearSession();
             Toast.makeText(requireContext(), "Logged out", Toast.LENGTH_SHORT).show();

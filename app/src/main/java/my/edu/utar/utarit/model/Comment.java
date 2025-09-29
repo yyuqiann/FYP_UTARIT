@@ -1,84 +1,55 @@
 package my.edu.utar.utarit.model;
 
-import com.google.gson.annotations.SerializedName;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+import java.util.TimeZone;
 
 public class Comment {
-
-    @SerializedName("id")
     private String id;
-
-    @SerializedName("post_id")
-    private String postId;
-
-    @SerializedName("user_id")
-    private String userId;
-
-    @SerializedName("username")
-    private String username;
-
-    @SerializedName("content")
     private String content;
+    private String created_at;
+    private String user_id;
+    private Map<String, Object> users; // nested user object
 
-    @SerializedName("created_at")
-    private String createdAt;
-
-    public Comment() {
+    // Nested user class
+    public static class Users {
+        public String username;
     }
 
-    public Comment(String id, String postId, String userId, String username, String content, String createdAt) {
-        this.id = id;
-        this.postId = postId;
-        this.userId = userId;
-        this.username = username;
-        this.content = content;
-        this.createdAt = createdAt;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public String getId() {
-        return id;
-    }
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
 
-    public String getPostId() {
-        return postId;
-    }
+    public String getCreatedAt() { return created_at; }
+    public void setCreatedAt(String created_at) { this.created_at = created_at; }
 
-    public String getUserId() {
-        return userId;
-    }
+    public String getUserId() { return user_id; }
+    public void setUserId(String user_id) { this.user_id = user_id; }
 
+    // Return username from nested user object
     public String getUsername() {
-        return username;
+        if (users != null && users.get("username") != null) {
+            return users.get("username").toString();
+        }
+        return "Unknown";
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setPostId(String postId) {
-        this.postId = postId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+    // Format timestamp
+    public String getFormattedTime() {
+        if (created_at == null) return "";
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = sdf.parse(created_at);
+            SimpleDateFormat output = new SimpleDateFormat("dd/MM/yy HH:mm");
+            return output.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return created_at;
+        }
     }
 }

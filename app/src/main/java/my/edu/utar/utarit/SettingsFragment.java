@@ -73,7 +73,7 @@ public class SettingsFragment extends Fragment {
             public void onResponse(Call<List<Profile>> call, Response<List<Profile>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     currentProfile = response.body().get(0);
-                    usernameEditText.setText(currentProfile.getUsername());
+                    usernameEditText.setText(currentProfile.getDisplayName());
                 } else {
                     Toast.makeText(requireContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
                 }

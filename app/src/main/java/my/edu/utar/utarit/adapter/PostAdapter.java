@@ -1,39 +1,41 @@
 package my.edu.utar.utarit.adapter;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
+import android.widget.Toast;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import my.edu.utar.utarit.CommentBottomSheet;
 import my.edu.utar.utarit.R;
-import my.edu.utar.utarit.SupabaseConfig;
-import my.edu.utar.utarit.api.SupabaseApi;
 import my.edu.utar.utarit.model.Post;
 import my.edu.utar.utarit.network.SupabaseClient;
 import my.edu.utar.utarit.utils.SessionManager;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
-    private final Context context;
-    private final List<Post> postList;
+    public interface OnCommentClickListener {
+        void onCommentClick(Post post);
+    }
 
-    public PostAdapter(Context context, List<Post> postList) {
+    private final Context context;
+    private final List<Post> posts;
+    private final String currentUserId;
+    private final OnCommentClickListener commentClickListener;
+
+    public PostAdapter(Context context, List<Post> posts, OnCommentClickListener listener) {
         this.context = context;
-        this.postList = postList;
+        this.posts = posts;
+        this.currentUserId = SessionManager.getInstance(context).getUserId();
+        this.commentClickListener = listener;
     }
 
     @NonNull
@@ -45,71 +47,105 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
-        Post post = postList.get(position);
+        Post post = posts.get(position);
 
-        holder.username.setText(post.getUsername());
-        holder.content.setText(post.getContent());
-        holder.likes.setText(String.valueOf(post.getLikes()));
+        holder.usernameTextView.setText(post.getDisplayName());
+        holder.contentTextView.setText(post.getContent());
+        holder.likesCountText.setText(String.valueOf(post.getLikesCount()));
+        holder.commentCountText.setText(String.valueOf(post.getCommentsCount()));
 
-        // Like button
-        holder.btnLike.setOnClickListener(v -> {
-            String accessToken = SessionManager.getInstance(context).getAccessToken();
-            SupabaseApi api = SupabaseClient.getApi();
+        // Set like icon
+        boolean isLiked = post.isLikedBy(currentUserId);
+        holder.likeButton.setImageResource(isLiked ? R.drawable.ic_like_filled : R.drawable.ic_like_outline);
 
-            // update local UI
-            int newLikes = post.getLikes() + 1;
-            post.setLikes(newLikes);
-            holder.likes.setText(String.valueOf(newLikes));
+        // Like button click
+        holder.likeButton.setOnClickListener(v -> {
+            holder.likeButton.setEnabled(false); // disable during API call
+            boolean currentlyLiked = post.isLikedBy(currentUserId);
 
-            // update backend
-            api.updatePostLikes(SupabaseConfig.API_KEY, "Bearer " + accessToken, post.getId(), newLikes)
-                    .enqueue(new Callback<Post>() {
-                        @Override
-                        public void onResponse(Call<Post> call, Response<Post> response) {
-                            if (!response.isSuccessful()) {
-                                Toast.makeText(context, "Like update failed", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+            if (currentlyLiked) {
+                // Optimistically remove like
+                post.removeLike(currentUserId);
+                holder.likeButton.setImageResource(R.drawable.ic_like_outline);
+                holder.likesCountText.setText(String.valueOf(post.getLikesCount()));
 
-                        @Override
-                        public void onFailure(Call<Post> call, Throwable t) {
-                            Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        });
+                SupabaseClient.removeLike(post.getId(), context, new SupabaseClient.LikeCallback() {
+                    @Override
+                    public void onSuccess(boolean isLikedNow) {
+                        holder.likeButton.setEnabled(true);
+                    }
 
-        // Comment button
-        holder.btnComment.setOnClickListener(v -> {
-            CommentBottomSheet bottomSheet = new CommentBottomSheet(post);
-            bottomSheet.show(((AppCompatActivity) context).getSupportFragmentManager(), "CommentSheet");
+                    @Override
+                    public void onError(String error) {
+                        // Rollback on error
+                        post.addLike(currentUserId);
+                        holder.likeButton.setImageResource(R.drawable.ic_like_filled);
+                        holder.likesCountText.setText(String.valueOf(post.getLikesCount()));
+                        Toast.makeText(context, "Failed to unlike: " + error, Toast.LENGTH_SHORT).show();
+                        holder.likeButton.setEnabled(true);
+                    }
+                });
+            } else {
+                // Optimistically add like
+                post.addLike(currentUserId);
+                holder.likeButton.setImageResource(R.drawable.ic_like_filled);
+                holder.likesCountText.setText(String.valueOf(post.getLikesCount()));
+
+                SupabaseClient.addPostLike(post.getId(), context, new SupabaseClient.LikeCallback() {
+                    @Override
+                    public void onSuccess(boolean isLikedNow) {
+                        holder.likeButton.setEnabled(true);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        // Rollback on error
+                        post.removeLike(currentUserId);
+                        holder.likeButton.setImageResource(R.drawable.ic_like_outline);
+                        holder.likesCountText.setText(String.valueOf(post.getLikesCount()));
+                        Toast.makeText(context, "Failed to like: " + error, Toast.LENGTH_SHORT).show();
+                        holder.likeButton.setEnabled(true);
+                    }
+                });
+            }
         });
 
         // Share button
-        holder.btnShare.setOnClickListener(v -> {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, post.getContent());
-            context.startActivity(Intent.createChooser(shareIntent, "Share Post"));
+        holder.shareButton.setOnClickListener(v -> {
+            String postLink = "https://utarit/posts/" + post.getId();
+            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setPrimaryClip(ClipData.newPlainText("Post Link", postLink));
+            Toast.makeText(context, "Post link copied!", Toast.LENGTH_SHORT).show();
+        });
+
+        // Comment button
+        // Comment button opens fragment
+        holder.commentButton.setOnClickListener(v -> {
+            if (commentClickListener != null) {
+                commentClickListener.onCommentClick(post);
+            }
+
         });
     }
 
     @Override
     public int getItemCount() {
-        return postList.size();
+        return posts != null ? posts.size() : 0;
     }
 
     static class PostViewHolder extends RecyclerView.ViewHolder {
-        TextView username, content, likes;
-        ImageView btnLike, btnComment, btnShare;
+        TextView usernameTextView, contentTextView, likesCountText, commentCountText;
+        ImageView likeButton, shareButton, commentButton;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
-            username = itemView.findViewById(R.id.postUsername);
-            content = itemView.findViewById(R.id.postContent);
-            likes = itemView.findViewById(R.id.postLikes);
-            btnLike = itemView.findViewById(R.id.btnLike);
-            btnComment = itemView.findViewById(R.id.btnComment);
-            btnShare = itemView.findViewById(R.id.btnShare);
+            usernameTextView = itemView.findViewById(R.id.postUsername);
+            contentTextView = itemView.findViewById(R.id.postContent);
+            likesCountText = itemView.findViewById(R.id.postLikes);
+            commentCountText = itemView.findViewById(R.id.postComments);
+            likeButton = itemView.findViewById(R.id.btnLike);
+            shareButton = itemView.findViewById(R.id.btnShare);
+            commentButton = itemView.findViewById(R.id.btnComment);
         }
     }
 }

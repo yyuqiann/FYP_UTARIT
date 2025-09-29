@@ -1,43 +1,57 @@
 package my.edu.utar.utarit;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 import my.edu.utar.utarit.adapter.CommentAdapter;
-import my.edu.utar.utarit.api.SupabaseApi;
 import my.edu.utar.utarit.model.Comment;
-import my.edu.utar.utarit.model.Post;
 import my.edu.utar.utarit.network.SupabaseClient;
-import my.edu.utar.utarit.utils.SessionManager;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class CommentFragment extends Fragment {
+
+    private static final String ARG_POST_ID = "post_id";
 
     private RecyclerView recyclerView;
     private EditText editComment;
     private ImageButton btnSend;
     private CommentAdapter adapter;
     private List<Comment> commentList = new ArrayList<>();
-    private Post post;
-    private SupabaseApi api;
+    private String postId;
 
-    public CommentFragment(Post post) {
-        this.post = post;
+    private CommentAddedCallback callback;
+
+    public interface CommentAddedCallback {
+        void onCommentAdded(String postId);
+    }
+
+    public static CommentFragment newInstance(String postId, CommentAddedCallback callback) {
+        CommentFragment fragment = new CommentFragment();
+        fragment.callback = callback;
+        Bundle args = new Bundle();
+        args.putString(ARG_POST_ID, postId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) postId = getArguments().getString(ARG_POST_ID);
     }
 
     @Nullable
@@ -50,64 +64,54 @@ public class CommentFragment extends Fragment {
         editComment = view.findViewById(R.id.editComment);
         btnSend = view.findViewById(R.id.btnSendComment);
 
+        adapter = new CommentAdapter(commentList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new CommentAdapter(getContext(), commentList);
         recyclerView.setAdapter(adapter);
 
-        api = SupabaseClient.getApi();
         loadComments();
 
         btnSend.setOnClickListener(v -> {
-            String text = editComment.getText().toString().trim();
-            if (!text.isEmpty()) sendComment(text);
+            String content = editComment.getText().toString().trim();
+            if (!TextUtils.isEmpty(content)) sendComment(content);
         });
 
         return view;
     }
 
     private void loadComments() {
-        String accessToken = SessionManager.getInstance(requireContext()).getAccessToken();
-        api.getComments(SupabaseConfig.API_KEY, "Bearer " + accessToken, post.getId())
-                .enqueue(new Callback<List<Comment>>() {
-                    @Override
-                    public void onResponse(Call<List<Comment>> call, Response<List<Comment>> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            commentList.clear();
-                            commentList.addAll(response.body());
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
+        SupabaseClient.getPostComments(postId, requireContext(), new SupabaseClient.CommentsCallback() {
+            @Override
+            public void onSuccess(List<Comment> comments) {
+                commentList.clear();
+                commentList.addAll(comments);
+                adapter.notifyDataSetChanged();
+            }
 
-                    @Override
-                    public void onFailure(Call<List<Comment>> call, Throwable t) {
-                        Toast.makeText(getContext(), "Failed to load comments", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onError(String error) {
+                Toast.makeText(getContext(), "Error loading comments: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void sendComment(String text) {
-        String accessToken = SessionManager.getInstance(requireContext()).getAccessToken();
-        Map<String, Object> body = new HashMap<>();
-        body.put("post_id", post.getId());
-        body.put("content", text);
+    private void sendComment(String content) {
+        SupabaseClient.addPostComment(postId, content, requireContext(), new SupabaseClient.CommentCallback() {
+            @Override
+            public void onSuccess(Comment newComment) {
+                editComment.setText("");
+                commentList.add(0, newComment); // top of the list
+                adapter.notifyItemInserted(0);
+                recyclerView.scrollToPosition(0);
 
-        api.addComment(SupabaseConfig.API_KEY, "Bearer " + accessToken, body)
-                .enqueue(new Callback<Comment>() {
-                    @Override
-                    public void onResponse(Call<Comment> call, Response<Comment> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            commentList.add(response.body());
-                            adapter.notifyItemInserted(commentList.size() - 1);
-                            editComment.setText("");
-                        } else {
-                            Toast.makeText(getContext(), "Failed to send comment", Toast.LENGTH_SHORT).show();
-                        }
-                    }
+                if (callback != null) callback.onCommentAdded(postId); // notify HomeFragment
 
-                    @Override
-                    public void onFailure(Call<Comment> call, Throwable t) {
-                        Toast.makeText(getContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                Toast.makeText(getContext(), "Comment sent", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(getContext(), "Failed: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
